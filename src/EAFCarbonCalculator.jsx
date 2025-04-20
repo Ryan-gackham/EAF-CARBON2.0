@@ -88,7 +88,74 @@ export default function EAFCarbonCalculator() {
     <div className="px-4 py-6 w-full max-w-2xl mx-auto sm:px-6 md:px-8">
       <h1 className="text-xl sm:text-2xl font-bold mb-2 text-center">电弧炉碳排放计算器（基于排放因子）</h1>
       <p className="text-center text-sm text-gray-500 mb-4">电弧炉智控新观察 出品</p>
-      {/* ... content omitted for brevity ... */}
+      <Card>
+        <CardContent className="space-y-6 p-4" id="calculator-result">
+          <h2 className="text-lg font-semibold text-gray-700">📥 输入信息</h2>
+          <div className="grid gap-4">
+            <div>
+              <Label>电炉工程容量（万吨/天）</Label>
+              <Input type="number" value={capacity} onChange={(e) => setCapacity(parseFloat(e.target.value) || 0)} />
+            </div>
+            <div>
+              <Label>年生产天数</Label>
+              <Input type="number" value={days} onChange={(e) => setDays(parseFloat(e.target.value) || 0)} />
+            </div>
+            <div>
+              <Label>钢铁料消耗（吨钢用钢铁料，默认1.05）</Label>
+              <Input type="number" value={steelRatio} onChange={(e) => setSteelRatio(parseFloat(e.target.value) || 1)} />
+            </div>
+            {Object.entries(emissionFactors).map(([material, { unit }]) => (
+              <div key={material}>
+                <Label>{material} 吨钢耗量（{unit}）</Label>
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  className="text-base"
+                  value={intensities[material]}
+                  onChange={(e) => handleIntensityChange(material, e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+
+          <hr className="my-4 border-t" />
+
+          <h2 className="text-lg font-semibold text-gray-700">📤 输出结果</h2>
+          <div className="text-base space-y-2">
+            <p>📦 年产量估算：<strong>{annualOutput.toFixed(2)}</strong> 万吨</p>
+            <p>📥 年钢铁料需求：<strong>{annualSteelInput.toFixed(2)}</strong> 万吨</p>
+            <p>🌍 碳排放总量：<strong>{totalEmissions.toFixed(2)}</strong> 吨CO₂</p>
+            <p>📊 碳排强度：<strong>{emissionIntensity.toFixed(4)}</strong> 吨CO₂ / 吨钢</p>
+          </div>
+
+          {emissionBreakdown.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-base font-semibold mb-2 text-center">各原料碳排占比图</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={emissionBreakdown}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={100}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
+                  >
+                    {emissionBreakdown.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => `${value.toFixed(2)} 吨 CO₂`} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </CardContent>
+        <div className="p-4 text-center">
+          <Button onClick={exportPDF}>📄 导出 PDF 报告</Button>
+        </div>
+      </Card>
     </div>
   );
 }
