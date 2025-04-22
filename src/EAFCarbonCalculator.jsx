@@ -18,8 +18,7 @@ const emissionFactors = {
   "电力": { unit: "kWh/t", factor: 0.5568 },
   "蒸汽（净使用）": { unit: "kg/t", factor: 0.1100 },
     "合金": { unit: "kg/t", factor: 0.2750 }
-}
-  "石灰": { unit: "kg/t", factor: 1.024 },
+},
   "轻烧白云石": { unit: "kg/t", factor: 1.024 },
   "废钢": { unit: "t/t", factor: 0.015 },
   "电极": { unit: "kg/t", factor: 3.663 },
